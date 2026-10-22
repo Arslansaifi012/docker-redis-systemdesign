@@ -11,6 +11,7 @@ import env from "dotenv"
 import DBconnection from "./config/DB.js";
 import user from "./model/user.js";
 import ratelimitter from "./middleware/rateLimit.js";
+import emailQueue from "./queue.js";
 env.config();
 
 app.use(express.json())
@@ -27,9 +28,9 @@ app.post("/create-user", async(req, res) => {
     email,
     password,
   });
-  console.log(userdetails,'this is userdetails');
-  
 
+  await emailQueue.add("email-queue", { email });
+  
   res.json({ message: "user created sucessfully",  user:userdetails});
 
   
